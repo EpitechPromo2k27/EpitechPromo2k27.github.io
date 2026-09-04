@@ -1,0 +1,70 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "My API",
+    "version": "1.0.0",
+    "description": "API documentation"
+  },
+  "paths": {
+    "/items": {
+      "get": {
+        "description": "Retreive items from database",
+        "responses": {
+          "200": {
+            "description": "Database interaction successfull"
+          }
+        }
+      },
+      "post": {
+        "description": "Add an item to the database",
+        "responses": {
+          "200": {
+            "description": "Successfully added an item to the database"
+          }
+        }
+      }
+    },
+    "/items/{id}": {
+      "put": {
+        "description": "Change an item in the database",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Item ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully modified an item from the database"
+          }
+        }
+      },
+      "delete": {
+        "description": "Remove an item from the database",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Item ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully removed an item from the database"
+          }
+        }
+      }
+    }
+  },
+  "components": {},
+  "tags": []
+}
