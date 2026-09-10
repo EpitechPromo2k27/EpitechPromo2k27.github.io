@@ -20,6 +20,9 @@
         "responses": {
           "200": {
             "description": "Successfully added an item to the database"
+          },
+          "400": {
+            "description": "Request validation failed"
           }
         }
       }
@@ -41,6 +44,12 @@
         "responses": {
           "200": {
             "description": "Successfully modified an item from the database"
+          },
+          "400": {
+            "description": "Request validation failed"
+          },
+          "404": {
+            "description": "Item not found"
           }
         }
       },
@@ -58,8 +67,11 @@
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "Successfully removed an item from the database"
+          },
+          "404": {
+            "description": "Item not found"
           }
         }
       }
