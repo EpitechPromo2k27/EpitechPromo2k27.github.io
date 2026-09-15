@@ -75,6 +75,61 @@
           }
         }
       }
+    },
+    "/auth/register": {
+      "post": {
+        "description": "Register a new user account",
+        "responses": {
+          "201": {
+            "description": "Account created"
+          },
+          "400": {
+            "description": "Request validation failed"
+          },
+          "409": {
+            "description": "Email or username already taken"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "description": "Log in and start a session",
+        "responses": {
+          "200": {
+            "description": "Authenticated, session cookie set"
+          },
+          "400": {
+            "description": "Request validation failed"
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "description": "Log out and invalidate the current session, if any",
+        "responses": {
+          "204": {
+            "description": "Logged out"
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "description": "Return the currently authenticated user",
+        "responses": {
+          "200": {
+            "description": "The authenticated user"
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        }
+      }
     }
   },
   "components": {},
