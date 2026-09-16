@@ -130,66 +130,6 @@
           }
         }
       }
-    },
-    "/account": {
-      "get": {
-        "description": "View the authenticated user's account",
-        "responses": {
-          "200": {
-            "description": "The account"
-          },
-          "401": {
-            "description": "Not authenticated"
-          }
-        }
-      },
-      "patch": {
-        "description": "Update username, email and/or password. currentPassword is required when changing email or password.",
-        "responses": {
-          "200": {
-            "description": "Updated account"
-          },
-          "400": {
-            "description": "Request validation failed"
-          },
-          "401": {
-            "description": "Not authenticated, or currentPassword incorrect/missing"
-          },
-          "409": {
-            "description": "Username or email already taken"
-          }
-        }
-      }
-    },
-    "/account/deletion-request": {
-      "post": {
-        "description": "Request deletion of the authenticated user's account (GDPR).\nThis does not delete the account immediately: it records the\nrequest for processing and freezes the account (all sessions,\nincluding the current one, are invalidated).\n",
-        "responses": {
-          "201": {
-            "description": "Deletion request recorded"
-          },
-          "401": {
-            "description": "Not authenticated, or password incorrect"
-          },
-          "409": {
-            "description": "A deletion request is already pending"
-          }
-        }
-      },
-      "delete": {
-        "description": "Cancel a pending account deletion request",
-        "responses": {
-          "204": {
-            "description": "Deletion request cancelled"
-          },
-          "401": {
-            "description": "Not authenticated"
-          },
-          "404": {
-            "description": "No pending deletion request"
-          }
-        }
-      }
     }
   },
   "components": {},
