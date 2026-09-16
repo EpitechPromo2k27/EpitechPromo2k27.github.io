@@ -6,6 +6,76 @@
     "description": "API documentation"
   },
   "paths": {
+    "/tasks": {
+      "get": {
+        "description": "Retreive tasks from database",
+        "responses": {
+          "200": {
+            "description": "Database interaction successfull"
+          }
+        }
+      },
+      "post": {
+        "description": "Add a task to the database",
+        "responses": {
+          "200": {
+            "description": "Successfully added a task to the database"
+          },
+          "400": {
+            "description": "Request validation failed"
+          }
+        }
+      }
+    },
+    "/tasks/{id}": {
+      "put": {
+        "description": "Change a task in the database",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Task ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully modified a task from the database"
+          },
+          "400": {
+            "description": "Request validation failed"
+          },
+          "404": {
+            "description": "Task not found"
+          }
+        }
+      },
+      "delete": {
+        "description": "Remove a task from the database",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Task ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successfully removed a task from the database"
+          },
+          "404": {
+            "description": "Task not found"
+          }
+        }
+      }
+    },
     "/projects": {
       "get": {
         "description": "Retrieve all projects of a user from database",
@@ -141,76 +211,6 @@
           },
           "404": {
             "description": "Project not found"
-          }
-        }
-      }
-    },
-    "/items": {
-      "get": {
-        "description": "Retreive items from database",
-        "responses": {
-          "200": {
-            "description": "Database interaction successfull"
-          }
-        }
-      },
-      "post": {
-        "description": "Add an item to the database",
-        "responses": {
-          "200": {
-            "description": "Successfully added an item to the database"
-          },
-          "400": {
-            "description": "Request validation failed"
-          }
-        }
-      }
-    },
-    "/items/{id}": {
-      "put": {
-        "description": "Change an item in the database",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Item ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully modified an item from the database"
-          },
-          "400": {
-            "description": "Request validation failed"
-          },
-          "404": {
-            "description": "Item not found"
-          }
-        }
-      },
-      "delete": {
-        "description": "Remove an item from the database",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Item ID"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successfully removed an item from the database"
-          },
-          "404": {
-            "description": "Item not found"
           }
         }
       }
