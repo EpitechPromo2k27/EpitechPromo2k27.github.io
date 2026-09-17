@@ -6,20 +6,9 @@
     "description": "API documentation"
   },
   "paths": {
-    "/tasks/legacy/{id}": {
+    "/items": {
       "get": {
-        "description": "Retrieve a legacy task from database",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Legacy Task ID"
-          }
-        ],
+        "description": "Retreive items from database",
         "responses": {
           "200": {
             "description": "Database interaction successfull"
@@ -27,47 +16,10 @@
         }
       },
       "post": {
-        "description": "Copy a legacy task to the database",
-        "requestBody": {
-          "description": "Task data to add to the copied legacy task",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "projectId",
-                  "priority"
-                ],
-                "properties": {
-                  "projectId": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "description": {
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "priority": {
-                    "type": "string",
-                    "enum": [
-                      "LOW",
-                      "MEDIUM",
-                      "HIGH"
-                    ]
-                  },
-                  "deadline": {
-                    "type": "date",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        },
+        "description": "Add an item to the database",
         "responses": {
           "200": {
-            "description": "Successfully copied the legacy task to the database"
+            "description": "Successfully added an item to the database"
           },
           "400": {
             "description": "Request validation failed"
@@ -75,111 +27,9 @@
         }
       }
     },
-    "/tasks": {
-      "get": {
-        "description": "Retrieve tasks from database",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "projectId",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Project ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Database interaction successfull"
-          }
-        }
-      },
-      "post": {
-        "description": "Add a task to the database",
-        "requestBody": {
-          "description": "Task data to create",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "projectId",
-                  "title",
-                  "status",
-                  "priority"
-                ],
-                "properties": {
-                  "projectId": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "title": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "description": {
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "status": {
-                    "type": "string",
-                    "enum": [
-                      "TODO",
-                      "IN_PROGRESS",
-                      "DONE"
-                    ]
-                  },
-                  "priority": {
-                    "type": "string",
-                    "enum": [
-                      "LOW",
-                      "MEDIUM",
-                      "HIGH"
-                    ]
-                  },
-                  "deadline": {
-                    "type": "date",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successfully added a task to the database"
-          },
-          "400": {
-            "description": "Request validation failed"
-          }
-        }
-      }
-    },
-    "/tasks/{id}": {
-      "get": {
-        "description": "Retrieve a task from database",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Task ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Database interaction successfull"
-          }
-        }
-      },
+    "/items/{id}": {
       "put": {
-        "description": "Change a task in the database",
+        "description": "Change an item in the database",
         "parameters": [
           {
             "in": "path",
@@ -188,69 +38,23 @@
             "schema": {
               "type": "string"
             },
-            "description": "Task ID"
+            "description": "Item ID"
           }
         ],
-        "requestBody": {
-          "description": "Task data to create",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "title",
-                  "status",
-                  "priority"
-                ],
-                "properties": {
-                  "title": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "description": {
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "status": {
-                    "type": "string",
-                    "enum": [
-                      "TODO",
-                      "IN_PROGRESS",
-                      "DONE"
-                    ]
-                  },
-                  "priority": {
-                    "type": "string",
-                    "enum": [
-                      "LOW",
-                      "MEDIUM",
-                      "HIGH"
-                    ]
-                  },
-                  "deadline": {
-                    "type": "date",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
-            "description": "Successfully modified a task from the database"
+            "description": "Successfully modified an item from the database"
           },
           "400": {
             "description": "Request validation failed"
           },
           "404": {
-            "description": "Task not found"
+            "description": "Item not found"
           }
         }
       },
       "delete": {
-        "description": "Remove a task from the database",
+        "description": "Remove an item from the database",
         "parameters": [
           {
             "in": "path",
@@ -259,154 +63,15 @@
             "schema": {
               "type": "string"
             },
-            "description": "Task ID"
+            "description": "Item ID"
           }
         ],
         "responses": {
           "204": {
-            "description": "Successfully removed a task from the database"
+            "description": "Successfully removed an item from the database"
           },
           "404": {
-            "description": "Task not found"
-          }
-        }
-      }
-    },
-    "/projects": {
-      "get": {
-        "description": "Retrieve all projects of a user from database",
-        "responses": {
-          "200": {
-            "description": "Database interaction successfull"
-          }
-        }
-      },
-      "post": {
-        "description": "Add a project to the database",
-        "requestBody": {
-          "description": "Project data to create",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "name",
-                  "description"
-                ],
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "description": {
-                    "type": "string",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successfully added a project to the database"
-          },
-          "400": {
-            "description": "Request validation failed"
-          }
-        }
-      }
-    },
-    "/projects/{id}": {
-      "get": {
-        "description": "Retrieve a project from database",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Project ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Database interaction successfull"
-          }
-        }
-      },
-      "put": {
-        "description": "Modify a project in the database",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Project ID"
-          }
-        ],
-        "requestBody": {
-          "description": "Project data to update",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "name",
-                  "description"
-                ],
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "description": {
-                    "type": "string",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successfully modified a project from the database"
-          },
-          "400": {
-            "description": "Request validation failed"
-          },
-          "404": {
-            "description": "Project not found"
-          }
-        }
-      },
-      "delete": {
-        "description": "Delete a project from the database",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Project ID"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successfully deleted the project from the database"
-          },
-          "404": {
-            "description": "Project not found"
+            "description": "Item not found"
           }
         }
       }
