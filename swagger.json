@@ -6,6 +6,16 @@
     "description": "API documentation"
   },
   "paths": {
+    "/tasks/legacy": {
+      "get": {
+        "description": "Retrieve all legacy tasks from database",
+        "responses": {
+          "200": {
+            "description": "Database interaction successfull"
+          }
+        }
+      }
+    },
     "/tasks/legacy/{id}": {
       "get": {
         "description": "Retrieve a legacy task from database",
