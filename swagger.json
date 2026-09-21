@@ -421,16 +421,6 @@
         }
       }
     },
-    "/notifications": {
-      "get": {
-        "description": "Retrieve the authenticated user's notifications, most recent first",
-        "responses": {
-          "200": {
-            "description": "Database interaction successfull"
-          }
-        }
-      }
-    },
     "/auth/register": {
       "post": {
         "description": "Register a new user account",
