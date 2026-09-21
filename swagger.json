@@ -282,6 +282,52 @@
         }
       }
     },
+    "/tasks/{id}/assign": {
+      "patch": {
+        "description": "Assign a task to a project member (or unassign it with assignedUserId: null). The assignee must be the project's owner or a member.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Task ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "assignedUserId"
+                ],
+                "properties": {
+                  "assignedUserId": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task assignment updated"
+          },
+          "400": {
+            "description": "Assignee is not the project owner or a member"
+          },
+          "404": {
+            "description": "Task not found"
+          }
+        }
+      }
+    },
     "/projects": {
       "get": {
         "description": "Retrieve all projects of a user from database",
@@ -417,6 +463,153 @@
           },
           "404": {
             "description": "Project not found"
+          }
+        }
+      }
+    },
+    "/projects/{id}/members": {
+      "get": {
+        "description": "List the members of a project (owner or member only)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Project ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Members retrieved"
+          },
+          "404": {
+            "description": "Project not found"
+          }
+        }
+      },
+      "post": {
+        "description": "Add a member to a project. Owner only.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Project ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Member added"
+          },
+          "403": {
+            "description": "Only the project owner can add members"
+          },
+          "404": {
+            "description": "Project not found, or no user with this email"
+          },
+          "409": {
+            "description": "User is already a member (or the owner)"
+          }
+        }
+      }
+    },
+    "/projects/{id}/members/{userId}": {
+      "delete": {
+        "description": "Remove a member from a project. Owner only.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Project ID"
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User ID of the member to remove"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Member removed"
+          },
+          "403": {
+            "description": "Only the project owner can remove members"
+          },
+          "404": {
+            "description": "Project not found, or user is not a member"
+          },
+          "409": {
+            "description": "Cannot remove the project owner"
+          }
+        }
+      }
+    },
+    "/projects/{id}/leave": {
+      "post": {
+        "description": "Leave a project as a member. Not available to the project owner, who must delete the project instead. Any task assigned to the leaving member within this project is unassigned as part of the same operation.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Project ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Left the project"
+          },
+          "403": {
+            "description": "The project owner cannot leave the project"
+          },
+          "404": {
+            "description": "Project not found, or not a member"
+          }
+        }
+      }
+    },
+    "/notifications": {
+      "get": {
+        "description": "Retrieve the authenticated user's notifications, most recent first",
+        "responses": {
+          "200": {
+            "description": "Database interaction successfull"
           }
         }
       }
