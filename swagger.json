@@ -416,7 +416,8 @@
                 "type": "object",
                 "required": [
                   "name",
-                  "description"
+                  "description",
+                  "completed"
                 ],
                 "properties": {
                   "name": {
@@ -426,6 +427,9 @@
                   "description": {
                     "type": "string",
                     "nullable": true
+                  },
+                  "completed": {
+                    "type": "boolean"
                   }
                 }
               }
