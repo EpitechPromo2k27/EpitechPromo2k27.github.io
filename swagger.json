@@ -510,12 +510,11 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "email"
+                  "identifier"
                 ],
                 "properties": {
-                  "email": {
-                    "type": "string",
-                    "format": "email"
+                  "identifier": {
+                    "type": "string"
                   }
                 }
               }
@@ -530,7 +529,7 @@
             "description": "Only the project owner can add members"
           },
           "404": {
-            "description": "Project not found, or no user with this email"
+            "description": "Project not found, or no user with this email or username"
           },
           "409": {
             "description": "User is already a member (or the owner)"
