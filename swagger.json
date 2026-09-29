@@ -1038,6 +1038,7 @@
           "Projects"
         ],
         "summary": "Update a project",
+        "description": "Owner only.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/ProjectId"
@@ -1069,6 +1070,16 @@
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "description": "Only the project owner can update it",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           },
           "404": {
             "description": "Project not found (or no access)",
