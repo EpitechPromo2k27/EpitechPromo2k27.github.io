@@ -1151,7 +1151,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Members",
+            "description": "Owner and members",
             "content": {
               "application/json": {
                 "schema": {
