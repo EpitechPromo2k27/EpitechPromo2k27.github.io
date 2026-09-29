@@ -1332,7 +1332,7 @@
           "Project members"
         ],
         "summary": "Leave a project",
-        "description": "Leave a project as a member. Not available to the project owner, who must delete the project instead. Any task assigned to the leaving member within this project is unassigned as part of the same operation.\n",
+        "description": "Leave a project as a member. Not available to the project owner, who must transfer ownership or delete the project instead. Any task assigned to the leaving member within this project is unassigned as part of the same operation.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/ProjectId"
@@ -1360,6 +1360,88 @@
           },
           "404": {
             "description": "Project not found, or not a member",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{id}/transfer-ownership": {
+      "post": {
+        "tags": [
+          "Project members"
+        ],
+        "summary": "Transfer project ownership to a member",
+        "description": "Owner only. The designated member becomes the owner and the previous owner becomes a regular member, in a single transaction. The new owner is notified asynchronously.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProjectId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "identifier"
+                ],
+                "properties": {
+                  "identifier": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Email or username of the member who becomes the owner"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ownership transferred",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "description": "Only the project owner can transfer ownership",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project not found, or no user with this email or username",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The user already owns the project, is not a member of it, or ownership or membership changed concurrently\n",
             "content": {
               "application/json": {
                 "schema": {
