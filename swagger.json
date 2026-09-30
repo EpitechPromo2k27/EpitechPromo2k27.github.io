@@ -1,584 +1,45 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "101 App API",
+    "title": "My API",
     "version": "1.0.0",
-    "description": "REST API of the 101 app (projects, tasks, notifications, accounts). Authentication is cookie based: call `POST /auth/login` and the session cookie is sent automatically on subsequent requests."
+    "description": "API documentation"
   },
-  "servers": [
-    {
-      "url": "/",
-      "description": "Current host"
-    }
-  ],
-  "tags": [
-    {
-      "name": "Auth"
-    },
-    {
-      "name": "Account"
-    },
-    {
-      "name": "Projects"
-    },
-    {
-      "name": "Project members"
-    },
-    {
-      "name": "Tasks"
-    },
-    {
-      "name": "Legacy tasks"
-    },
-    {
-      "name": "Notifications"
-    }
-  ],
-  "components": {
-    "securitySchemes": {
-      "cookieAuth": {
-        "type": "apiKey",
-        "in": "cookie",
-        "name": "session_token",
-        "description": "Session token set by `POST /auth/login` (cookie name configurable via AUTH_SESSION_COOKIE_NAME)."
-      }
-    },
-    "parameters": {
-      "ProjectId": {
-        "in": "path",
-        "name": "id",
-        "required": true,
-        "schema": {
-          "type": "string"
-        },
-        "description": "Project ID"
-      },
-      "TaskId": {
-        "in": "path",
-        "name": "id",
-        "required": true,
-        "schema": {
-          "type": "string"
-        },
-        "description": "Task ID"
-      },
-      "LegacyTaskId": {
-        "in": "path",
-        "name": "id",
-        "required": true,
-        "schema": {
-          "type": "string"
-        },
-        "description": "Legacy task ID"
-      }
-    },
-    "responses": {
-      "ValidationError": {
-        "description": "Request validation failed (`VALIDATION_ERROR`, with per-field `details`)",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Error"
-            }
-          }
-        }
-      },
-      "Unauthorized": {
-        "description": "Not authenticated, or session expired/invalid (`UNAUTHORIZED`)",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Error"
-            }
-          }
-        }
-      }
-    },
-    "schemas": {
-      "Error": {
-        "type": "object",
-        "required": [
-          "error"
-        ],
-        "properties": {
-          "error": {
-            "type": "object",
-            "required": [
-              "code",
-              "message"
-            ],
-            "properties": {
-              "code": {
-                "type": "string",
-                "example": "VALIDATION_ERROR",
-                "description": "VALIDATION_ERROR, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, CONFLICT or INTERNAL_ERROR"
-              },
-              "message": {
-                "type": "string"
-              },
-              "details": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "field",
-                    "message"
-                  ],
-                  "properties": {
-                    "field": {
-                      "type": "string",
-                      "example": "body.title"
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "User": {
-        "type": "object",
-        "required": [
-          "id",
-          "username",
-          "email",
-          "status",
-          "lastLoginAt",
-          "createdAt",
-          "updatedAt"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "username": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string",
-            "format": "email"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "ACTIVE",
-              "DELETION_REQUESTED"
-            ]
-          },
-          "lastLoginAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "DeletionRequest": {
-        "type": "object",
-        "required": [
-          "id",
-          "reason",
-          "requestedAt",
-          "processedAt",
-          "cancelledAt"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "reason": {
-            "type": "string",
-            "nullable": true
-          },
-          "requestedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "processedAt": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "cancelledAt": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          }
-        }
-      },
-      "Project": {
-        "type": "object",
-        "required": [
-          "id",
-          "userId",
-          "name",
-          "description",
-          "createdAt",
-          "updatedAt"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "userId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Owner ID"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "ProjectInput": {
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "properties": {
-          "name": {
-            "type": "string",
-            "minLength": 1
-          },
-          "description": {
-            "type": "string",
-            "nullable": true,
-            "description": "Trimmed; empty or missing is stored as null"
-          }
-        }
-      },
-      "ProjectMember": {
-        "type": "object",
-        "required": [
-          "id",
-          "projectId",
-          "userId",
-          "joinedAt",
-          "username",
-          "email"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "projectId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "userId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "joinedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "username": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string",
-            "format": "email"
-          }
-        }
-      },
-      "TaskStatus": {
-        "type": "string",
-        "enum": [
-          "TODO",
-          "IN_PROGRESS",
-          "DONE"
-        ]
-      },
-      "TaskPriority": {
-        "type": "string",
-        "enum": [
-          "LOW",
-          "MEDIUM",
-          "HIGH"
-        ]
-      },
-      "Task": {
-        "type": "object",
-        "required": [
-          "id",
-          "userId",
-          "projectId",
-          "title",
-          "description",
-          "status",
-          "priority",
-          "deadline",
-          "assignedUserId",
-          "createdAt",
-          "updatedAt"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "userId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Creator ID"
-          },
-          "projectId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "title": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "$ref": "#/components/schemas/TaskStatus"
-          },
-          "priority": {
-            "$ref": "#/components/schemas/TaskPriority"
-          },
-          "deadline": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "assignedUserId": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "TaskUpdateInput": {
-        "type": "object",
-        "required": [
-          "title",
-          "status",
-          "priority"
-        ],
-        "properties": {
-          "title": {
-            "type": "string",
-            "minLength": 1
-          },
-          "description": {
-            "type": "string",
-            "nullable": true,
-            "description": "Trimmed; empty or missing is stored as null"
-          },
-          "status": {
-            "$ref": "#/components/schemas/TaskStatus"
-          },
-          "priority": {
-            "$ref": "#/components/schemas/TaskPriority"
-          },
-          "deadline": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true,
-            "description": "Any date string parseable by `new Date()`; empty or missing is stored as null"
-          }
-        }
-      },
-      "TaskCreateInput": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/TaskUpdateInput"
-          },
-          {
-            "type": "object",
-            "required": [
-              "projectId"
-            ],
-            "properties": {
-              "projectId": {
-                "type": "string",
-                "minLength": 1
-              }
-            }
-          }
-        ]
-      },
-      "LegacyTask": {
-        "type": "object",
-        "required": [
-          "id",
-          "title",
-          "status",
-          "idOld"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "title": {
-            "type": "string"
-          },
-          "status": {
-            "$ref": "#/components/schemas/TaskStatus"
-          },
-          "idOld": {
-            "type": "string",
-            "nullable": true,
-            "description": "Pre-UUID identifier"
-          }
-        }
-      },
-      "Notification": {
-        "type": "object",
-        "required": [
-          "id",
-          "userId",
-          "taskId",
-          "message",
-          "createdAt"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "userId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "taskId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "message": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      }
-    }
-  },
-  "security": [
-    {
-      "cookieAuth": []
-    }
-  ],
   "paths": {
-    "/api/tasks/legacy": {
+    "/tasks/legacy": {
       "get": {
-        "tags": [
-          "Legacy tasks"
-        ],
-        "summary": "List legacy tasks",
-        "description": "Orphaned tasks from before projects existed (not owned by any user).\n",
+        "description": "Retrieve all legacy tasks from database",
         "responses": {
           "200": {
-            "description": "Legacy tasks",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LegacyTask"
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
+            "description": "Database interaction successfull"
           }
         }
       }
     },
-    "/api/tasks/legacy/{id}": {
+    "/tasks/legacy/{id}": {
       "get": {
-        "tags": [
-          "Legacy tasks"
-        ],
-        "summary": "Get a legacy task",
+        "description": "Retrieve a legacy task from database",
         "parameters": [
           {
-            "$ref": "#/components/parameters/LegacyTaskId"
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Legacy Task ID"
           }
         ],
         "responses": {
           "200": {
-            "description": "The legacy task",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegacyTask"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "404": {
-            "description": "Legacy task not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Database interaction successfull"
           }
         }
       },
       "post": {
-        "tags": [
-          "Legacy tasks"
-        ],
-        "summary": "Copy a legacy task into a project",
-        "description": "Creates a new task in the given project from the legacy task (title and status are taken from the legacy task).\n",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/LegacyTaskId"
-          }
-        ],
+        "description": "Copy a legacy task to the database",
         "requestBody": {
+          "description": "Task data to add to the copied legacy task",
           "required": true,
           "content": {
             "application/json": {
@@ -595,17 +56,19 @@
                   },
                   "description": {
                     "type": "string",
-                    "nullable": true,
-                    "description": "Trimmed; empty or missing is stored as null"
+                    "nullable": true
                   },
                   "priority": {
-                    "$ref": "#/components/schemas/TaskPriority"
+                    "type": "string",
+                    "enum": [
+                      "LOW",
+                      "MEDIUM",
+                      "HIGH"
+                    ]
                   },
                   "deadline": {
-                    "type": "string",
-                    "format": "date-time",
-                    "nullable": true,
-                    "description": "Empty or missing is stored as null"
+                    "type": "date",
+                    "nullable": true
                   }
                 }
               }
@@ -614,41 +77,17 @@
         },
         "responses": {
           "200": {
-            "description": "Task created from the legacy task",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Task"
-                }
-              }
-            }
+            "description": "Successfully copied the legacy task to the database"
           },
           "400": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "404": {
-            "description": "Legacy task or project not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Request validation failed"
           }
         }
       }
     },
-    "/api/tasks/project/{projectId}": {
+    "/tasks": {
       "get": {
-        "tags": [
-          "Tasks"
-        ],
-        "summary": "List tasks of a project",
-        "description": "Owner or member only.\n",
+        "description": "Retrieve tasks from database",
         "parameters": [
           {
             "in": "path",
@@ -662,215 +101,199 @@
         ],
         "responses": {
           "200": {
-            "description": "Tasks",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Task"
+            "description": "Database interaction successfull"
+          }
+        }
+      },
+      "post": {
+        "description": "Add a task to the database",
+        "requestBody": {
+          "description": "Task data to create",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "projectId",
+                  "title",
+                  "status",
+                  "priority"
+                ],
+                "properties": {
+                  "projectId": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "description": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "TODO",
+                      "IN_PROGRESS",
+                      "DONE"
+                    ]
+                  },
+                  "priority": {
+                    "type": "string",
+                    "enum": [
+                      "LOW",
+                      "MEDIUM",
+                      "HIGH"
+                    ]
+                  },
+                  "deadline": {
+                    "type": "date",
+                    "nullable": true
                   }
                 }
               }
             }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully added a task to the database"
           },
           "400": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "404": {
-            "description": "Project not found (or no access)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Request validation failed"
           }
         }
       }
     },
-    "/api/tasks/{id}": {
+    "/tasks/{id}": {
       "get": {
-        "tags": [
-          "Tasks"
-        ],
-        "summary": "Get a task",
+        "description": "Retrieve a task from database",
         "parameters": [
           {
-            "$ref": "#/components/parameters/TaskId"
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Task ID"
           }
         ],
         "responses": {
           "200": {
-            "description": "The task",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Task"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "404": {
-            "description": "Task not found (or no access)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Database interaction successfull"
           }
         }
       },
       "put": {
-        "tags": [
-          "Tasks"
-        ],
-        "summary": "Update a task",
+        "description": "Change a task in the database",
         "parameters": [
           {
-            "$ref": "#/components/parameters/TaskId"
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Task ID"
           }
         ],
         "requestBody": {
+          "description": "Task data to create",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TaskUpdateInput"
+                "type": "object",
+                "required": [
+                  "title",
+                  "status",
+                  "priority"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "description": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "TODO",
+                      "IN_PROGRESS",
+                      "DONE"
+                    ]
+                  },
+                  "priority": {
+                    "type": "string",
+                    "enum": [
+                      "LOW",
+                      "MEDIUM",
+                      "HIGH"
+                    ]
+                  },
+                  "deadline": {
+                    "type": "date",
+                    "nullable": true
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Updated task",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Task"
-                }
-              }
-            }
+            "description": "Successfully modified a task from the database"
           },
           "400": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
+            "description": "Request validation failed"
           },
           "404": {
-            "description": "Task not found (or no access)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Task not found"
           }
         }
       },
       "delete": {
-        "tags": [
-          "Tasks"
-        ],
-        "summary": "Delete a task",
+        "description": "Remove a task from the database",
         "parameters": [
           {
-            "$ref": "#/components/parameters/TaskId"
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Task ID"
           }
         ],
         "responses": {
           "204": {
-            "description": "Task deleted"
-          },
-          "400": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
+            "description": "Successfully removed a task from the database"
           },
           "404": {
-            "description": "Task not found (or no access)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Task not found"
           }
         }
       }
     },
-    "/api/tasks": {
-      "post": {
-        "tags": [
-          "Tasks"
-        ],
-        "summary": "Create a task",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TaskCreateInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Task created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Task"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "404": {
-            "description": "Project not found (or no access)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/tasks/{id}/assign": {
+    "/tasks/{id}/assign": {
       "patch": {
-        "tags": [
-          "Tasks"
-        ],
-        "summary": "Assign or unassign a task",
-        "description": "Assign a task to a project member (or unassign it with `assignedUserId: null`). The assignee must be the project's owner or a member.\n",
+        "description": "Assign a task to a project member (or unassign it with assignedUserId: null). The assignee must be the project's owner or a member.\n",
         "parameters": [
           {
-            "$ref": "#/components/parameters/TaskId"
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Task ID"
           }
         ],
         "requestBody": {
@@ -885,7 +308,6 @@
                 "properties": {
                   "assignedUserId": {
                     "type": "string",
-                    "minLength": 1,
                     "nullable": true
                   }
                 }
@@ -895,301 +317,190 @@
         },
         "responses": {
           "200": {
-            "description": "Task assignment updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Task"
-                }
-              }
-            }
+            "description": "Task assignment updated"
           },
           "400": {
-            "description": "Request validation failed, or assignee is not the project owner or a member",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
+            "description": "Assignee is not the project owner or a member"
           },
           "404": {
-            "description": "Task not found (or no access)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Task not found"
           }
         }
       }
     },
-    "/api/projects": {
+    "/projects": {
       "get": {
-        "tags": [
-          "Projects"
-        ],
-        "summary": "List projects",
-        "description": "Projects the authenticated user owns or is a member of.\n",
+        "description": "Retrieve all projects of a user from database",
         "responses": {
           "200": {
-            "description": "Projects",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Project"
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
+            "description": "Database interaction successfull"
           }
         }
       },
       "post": {
-        "tags": [
-          "Projects"
-        ],
-        "summary": "Create a project",
-        "description": "The authenticated user becomes the owner.\n",
+        "description": "Add a project to the database",
         "requestBody": {
+          "description": "Project data to create",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ProjectInput"
+                "type": "object",
+                "required": [
+                  "name",
+                  "description"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "description": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Project created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Project"
-                }
-              }
-            }
+            "description": "Successfully added a project to the database"
           },
           "400": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
+            "description": "Request validation failed"
           }
         }
       }
     },
-    "/api/projects/{id}": {
+    "/projects/{id}": {
       "get": {
-        "tags": [
-          "Projects"
-        ],
-        "summary": "Get a project",
-        "description": "Owner or member only.\n",
+        "description": "Retrieve a project from database",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ProjectId"
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Project ID"
           }
         ],
         "responses": {
           "200": {
-            "description": "The project",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Project"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "404": {
-            "description": "Project not found (or no access)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Database interaction successfull"
           }
         }
       },
       "put": {
-        "tags": [
-          "Projects"
-        ],
-        "summary": "Update a project",
-        "description": "Owner only.\n",
+        "description": "Modify a project in the database",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ProjectId"
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Project ID"
           }
         ],
         "requestBody": {
+          "description": "Project data to update",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ProjectInput"
+                "type": "object",
+                "required": [
+                  "name",
+                  "description"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "description": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Updated project",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Project"
-                }
-              }
-            }
+            "description": "Successfully modified a project from the database"
           },
           "400": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "description": "Only the project owner can update it",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Request validation failed"
           },
           "404": {
-            "description": "Project not found (or no access)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Project not found"
           }
         }
       },
       "delete": {
-        "tags": [
-          "Projects"
-        ],
-        "summary": "Delete a project",
-        "description": "Owner only.\n",
+        "description": "Delete a project from the database",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ProjectId"
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Project ID"
           }
         ],
         "responses": {
           "204": {
-            "description": "Project deleted"
-          },
-          "400": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "description": "Only the project owner can delete it",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Successfully deleted the project from the database"
           },
           "404": {
-            "description": "Project not found (or no access)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Project not found"
           }
         }
       }
     },
-    "/api/projects/{id}/members": {
+    "/projects/{id}/members": {
       "get": {
-        "tags": [
-          "Project members"
-        ],
-        "summary": "List project members",
-        "description": "Owner or member only.\n",
+        "description": "List the members of a project (owner or member only)",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ProjectId"
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Project ID"
           }
         ],
         "responses": {
           "200": {
-            "description": "Owner and members",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProjectMember"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
+            "description": "Members retrieved"
           },
           "404": {
-            "description": "Project not found (or no access)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Project not found"
           }
         }
       },
       "post": {
-        "tags": [
-          "Project members"
-        ],
-        "summary": "Add a member to a project",
-        "description": "Owner only.\n",
+        "description": "Add a member to a project. Owner only.",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ProjectId"
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Project ID"
           }
         ],
         "requestBody": {
@@ -1199,13 +510,12 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "identifier"
+                  "email"
                 ],
                 "properties": {
-                  "identifier": {
+                  "email": {
                     "type": "string",
-                    "minLength": 1,
-                    "description": "Email or username of the user to add"
+                    "format": "email"
                   }
                 }
               }
@@ -1214,64 +524,32 @@
         },
         "responses": {
           "200": {
-            "description": "Member added",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectMember"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
+            "description": "Member added"
           },
           "403": {
-            "description": "Only the project owner can add members",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Only the project owner can add members"
           },
           "404": {
-            "description": "Project not found, or no user with this email or username",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Project not found, or no user with this email"
           },
           "409": {
-            "description": "User is already a member (or the owner)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "User is already a member (or the owner)"
           }
         }
       }
     },
-    "/api/projects/{id}/members/{userId}": {
+    "/projects/{id}/members/{userId}": {
       "delete": {
-        "tags": [
-          "Project members"
-        ],
-        "summary": "Remove a member from a project",
-        "description": "Owner only.\n",
+        "description": "Remove a member from a project. Owner only.",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ProjectId"
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Project ID"
           },
           {
             "in": "path",
@@ -1287,168 +565,41 @@
           "204": {
             "description": "Member removed"
           },
-          "400": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
           "403": {
-            "description": "Only the project owner can remove members",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Only the project owner can remove members"
           },
           "404": {
-            "description": "Project not found, or user is not a member",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Project not found, or user is not a member"
           },
           "409": {
-            "description": "Cannot remove the project owner",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Cannot remove the project owner"
           }
         }
       }
     },
-    "/api/projects/{id}/leave": {
+    "/projects/{id}/leave": {
       "post": {
-        "tags": [
-          "Project members"
-        ],
-        "summary": "Leave a project",
-        "description": "Leave a project as a member. Not available to the project owner, who must transfer ownership or delete the project instead. Any task assigned to the leaving member within this project is unassigned as part of the same operation.\n",
+        "description": "Leave a project as a member. Not available to the project owner, who must delete the project instead. Any task assigned to the leaving member within this project is unassigned as part of the same operation.\n",
         "parameters": [
           {
-            "$ref": "#/components/parameters/ProjectId"
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Project ID"
           }
         ],
         "responses": {
           "204": {
             "description": "Left the project"
           },
-          "400": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
           "403": {
-            "description": "The project owner cannot leave the project",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "The project owner cannot leave the project"
           },
           "404": {
-            "description": "Project not found, or not a member",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/projects/{id}/transfer-ownership": {
-      "post": {
-        "tags": [
-          "Project members"
-        ],
-        "summary": "Transfer project ownership to a member",
-        "description": "Owner only. The designated member becomes the owner and the previous owner becomes a regular member, in a single transaction. The new owner is notified asynchronously.\n",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/ProjectId"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "identifier"
-                ],
-                "properties": {
-                  "identifier": {
-                    "type": "string",
-                    "minLength": 1,
-                    "description": "Email or username of the member who becomes the owner"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Ownership transferred",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Project"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "description": "Only the project owner can transfer ownership",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Project not found, or no user with this email or username",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "The user already owns the project, is not a member of it, or ownership or membership changed concurrently\n",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Project not found, or not a member"
           }
         }
       }
@@ -1465,132 +616,39 @@
     },
     "/auth/register": {
       "post": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Register a new user account",
-        "security": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "username",
-                  "email",
-                  "password",
-                  "confirmPassword"
-                ],
-                "properties": {
-                  "username": {
-                    "type": "string",
-                    "minLength": 3,
-                    "maxLength": 32,
-                    "pattern": "^[a-zA-Z0-9_-]+$"
-                  },
-                  "email": {
-                    "type": "string",
-                    "format": "email"
-                  },
-                  "password": {
-                    "type": "string",
-                    "minLength": 8
-                  },
-                  "confirmPassword": {
-                    "type": "string",
-                    "description": "Must match password"
-                  }
-                }
-              }
-            }
-          }
-        },
+        "description": "Register a new user account",
         "responses": {
           "201": {
-            "description": "Account created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
+            "description": "Account created"
           },
           "400": {
-            "$ref": "#/components/responses/ValidationError"
+            "description": "Request validation failed"
           },
           "409": {
-            "description": "Email or username already taken",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Email or username already taken"
           }
         }
       }
     },
     "/auth/login": {
       "post": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Log in and start a session",
-        "description": "On success, sets an httpOnly `session_token` cookie used to authenticate subsequent requests.\n",
-        "security": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "identifier",
-                  "password"
-                ],
-                "properties": {
-                  "identifier": {
-                    "type": "string",
-                    "minLength": 1,
-                    "description": "Email or username"
-                  },
-                  "password": {
-                    "type": "string",
-                    "minLength": 1
-                  }
-                }
-              }
-            }
-          }
-        },
+        "description": "Log in and start a session",
         "responses": {
+          "200": {
+            "description": "Authenticated, session cookie set"
+          },
           "400": {
-            "$ref": "#/components/responses/ValidationError"
+            "description": "Request validation failed"
           },
           "401": {
-            "description": "Invalid credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Invalid credentials"
           }
         }
       }
     },
     "/auth/logout": {
       "post": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Log out",
-        "description": "Invalidates the current session, if any, and clears the session cookie. Always succeeds, even without a valid session.\n",
-        "security": [],
+        "description": "Log out and invalidate the current session, if any",
         "responses": {
           "204": {
             "description": "Logged out"
@@ -1600,222 +658,78 @@
     },
     "/auth/me": {
       "get": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Get the currently authenticated user",
+        "description": "Return the currently authenticated user",
         "responses": {
           "200": {
-            "description": "The authenticated user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
+            "description": "The authenticated user"
           },
           "401": {
-            "$ref": "#/components/responses/Unauthorized"
+            "description": "Not authenticated"
           }
         }
       }
     },
-    "/api/account": {
+    "/account": {
       "get": {
-        "tags": [
-          "Account"
-        ],
-        "summary": "Get the authenticated user's account",
+        "description": "View the authenticated user's account",
         "responses": {
           "200": {
-            "description": "The account",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
+            "description": "The account"
           },
           "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "404": {
-            "description": "User not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Not authenticated"
           }
         }
       },
       "patch": {
-        "tags": [
-          "Account"
-        ],
-        "summary": "Update username, email and/or password",
-        "description": "At least one of username, email or newPassword must be provided. currentPassword is required when changing email or password.\n",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "username": {
-                    "type": "string",
-                    "minLength": 3,
-                    "maxLength": 32,
-                    "pattern": "^[a-zA-Z0-9_-]+$"
-                  },
-                  "email": {
-                    "type": "string",
-                    "format": "email"
-                  },
-                  "currentPassword": {
-                    "type": "string",
-                    "description": "Required when changing email or password"
-                  },
-                  "newPassword": {
-                    "type": "string",
-                    "minLength": 8
-                  },
-                  "confirmNewPassword": {
-                    "type": "string",
-                    "description": "Must match newPassword when newPassword is set"
-                  }
-                }
-              }
-            }
-          }
-        },
+        "description": "Update username, email and/or password. currentPassword is required when changing email or password.",
         "responses": {
           "200": {
-            "description": "Updated account",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
+            "description": "Updated account"
           },
           "400": {
-            "$ref": "#/components/responses/ValidationError"
+            "description": "Request validation failed"
           },
           "401": {
-            "description": "Not authenticated, or currentPassword missing/incorrect",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Not authenticated, or currentPassword incorrect/missing"
           },
           "409": {
-            "description": "Username or email already taken",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Username or email already taken"
           }
         }
       }
     },
-    "/api/account/deletion-request": {
+    "/account/deletion-request": {
       "post": {
-        "tags": [
-          "Account"
-        ],
-        "summary": "Request account deletion (GDPR)",
-        "description": "This does not delete the account immediately: it records the request for processing and freezes the account (all sessions, including the current one, are invalidated).\n",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "password"
-                ],
-                "properties": {
-                  "password": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "reason": {
-                    "type": "string",
-                    "maxLength": 500
-                  }
-                }
-              }
-            }
-          }
-        },
+        "description": "Request deletion of the authenticated user's account (GDPR).\nThis does not delete the account immediately: it records the\nrequest for processing and freezes the account (all sessions,\nincluding the current one, are invalidated).\n",
         "responses": {
           "201": {
-            "description": "Deletion request recorded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeletionRequest"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/ValidationError"
+            "description": "Deletion request recorded"
           },
           "401": {
-            "description": "Not authenticated, or password incorrect",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "Not authenticated, or password incorrect"
           },
           "409": {
-            "description": "A deletion request is already pending",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "description": "A deletion request is already pending"
+          }
+        }
+      },
+      "delete": {
+        "description": "Cancel a pending account deletion request",
+        "responses": {
+          "204": {
+            "description": "Deletion request cancelled"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "404": {
+            "description": "No pending deletion request"
           }
         }
       }
     }
-  }
+  },
+  "components": {},
+  "tags": []
 }
